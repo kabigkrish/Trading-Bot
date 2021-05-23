@@ -25,6 +25,36 @@ data = three_moving_avg(ticker, short_term_sma,mid_term_sma, long_term_sma)
 #export to excel 
 #data.to_excel("output.xlsx")  
 
+#buy sell function 
+def buy_sell(data):
+    buy_list=[]
+    sell_list=[]
+    flag_long=False
+    flag_short=False
+    for i in range(0,len(data)):
+        if(data['MIDDLE_SMA'][i]<data['LONG_SMA'][i] and data['SHORT_SMA']<data['MIDDLE_SMA'][i] and flag_long==False and flag_short==False):
+            buy_list.append(data['Close'][i])
+            sell_list.append(np.nan)
+            flag_short=True
+        elif flag_short==True and data['SHORT_SMA'][i]>data['MIDDLE_SMA'][i]:
+            sell_list.append(data['Close'])
+            buy_list.append(np.nan)
+            flag_short=False
+        elif(data['MIDDLE_SMA'][i]>data['LONG_SMA'][i] and data['SHORT_SMA']>data['MIDDLE_SMA'][i] and flag_long==False and flag_short==False):
+            buy_list.append(data['Close'][i])
+            sell_list.append(np.nan)
+            flag_long=True
+        elif flag_long==True and data['SHORT_SMA'][i]<data['MIDDLE_SMA'][i]:
+            sell_list.append(data['Close'])
+            buy_list.append(np.nan)
+            flag_long=False
+        else: 
+            buy_list.append(np.nan)
+            sell_list.append(np.nan)
+    return buy_list,sell_list
+
+buy_sell(data)
+
 #visualizing 
 plt.figure(figsize=(10, 5))
 plt.title('close Price',fontsize=18)
@@ -37,6 +67,5 @@ plt.title(f'Price Chart for {name}')
 plt.xlabel('data',fontsize=18)
 plt.ylabel('close price',fontsize=18)
 plt.show()
-
-
+ 
 
